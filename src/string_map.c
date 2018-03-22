@@ -154,7 +154,7 @@ rcutils_string_map_reserve(rcutils_string_map_t * string_map, size_t capacity)
   if (capacity == string_map->impl->capacity) {
     // if requested capacity is equal to the current capacity, nothing to do
     return RCUTILS_RET_OK;
-  } else if (capacity == 0) {
+  } else if (capacity == 0u) {
     // if the requested capacity is zero, then make sure the existing keys and values are free'd
     allocator.deallocate(string_map->impl->keys, allocator.state);
     string_map->impl->keys = NULL;
@@ -243,7 +243,7 @@ rcutils_string_map_set(rcutils_string_map_t * string_map, const char * key, cons
   if (ret == RCUTILS_RET_NOT_ENOUGH_SPACE) {
     rcutils_reset_error();
     // default to doubling the size of the map's capacity
-    size_t new_capacity = (string_map->impl->capacity) ? 2 * string_map->impl->capacity : 1;
+    size_t new_capacity = (string_map->impl->capacity != 0u) ? 2u * string_map->impl->capacity : 1u;
     ret = rcutils_string_map_reserve(string_map, new_capacity);
     if (ret != RCUTILS_RET_OK) {
       // error message is already set
@@ -416,7 +416,7 @@ rcutils_string_map_get_next_key(
   if (NULL == string_map || !string_map->impl) {
     return NULL;
   }
-  if (string_map->impl->size == 0) {
+  if (string_map->impl->size == 0u) {
     return NULL;
   }
   size_t start_index = 0;
@@ -428,7 +428,7 @@ rcutils_string_map_get_next_key(
       if (string_map->impl->keys[i] == key) {
         given_key_found = true;
         // given key found at index i, start there + 1
-        start_index = i + 1;
+        start_index = i + 1u;
       }
     }
     if (!given_key_found) {
