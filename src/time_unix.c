@@ -43,7 +43,7 @@ extern "C"
 # endif  // !defined(_POSIX_TIMERS) || !_POSIX_TIMERS
 #endif  // !defined(__MACH__)
 
-#define __WOULD_BE_NEGATIVE(seconds, subseconds) (seconds < 0 || (subseconds < 0 && seconds == 0))
+#define WOULD_BE_NEGATIVE(seconds, subseconds) (seconds < 0 || (subseconds < 0 && seconds == 0))
 
 rcutils_ret_t
 rcutils_system_time_now(rcutils_time_point_value_t * now)
@@ -62,13 +62,18 @@ rcutils_system_time_now(rcutils_time_point_value_t * now)
   timespec_now.tv_nsec = mts.tv_nsec;
 #else  // defined(__MACH__)
   // Otherwise use clock_gettime.
-  clock_gettime(CLOCK_REALTIME, &timespec_now);
+  int ret = clock_gettime(CLOCK_REALTIME, &timespec_now);
+  if (ret < 0) {
+    return RCUTILS_RET_ERROR;
+  }
 #endif  // defined(__MACH__)
-  if (__WOULD_BE_NEGATIVE(timespec_now.tv_sec, timespec_now.tv_nsec)) {
+  if (WOULD_BE_NEGATIVE(timespec_now.tv_sec, timespec_now.tv_nsec)) {
     RCUTILS_SET_ERROR_MSG("unexpected negative time", rcutils_get_default_allocator());
     return RCUTILS_RET_ERROR;
   }
-  *now = RCUTILS_S_TO_NS((uint64_t)timespec_now.tv_sec) + timespec_now.tv_nsec;
+  int64_t nanoseconds = timespec_now.tv_nsec;
+  nanoseconds = nanoseconds + RCUTILS_S_TO_NS((int64_t)timespec_now.tv_sec);
+  *now = nanoseconds;
   return RCUTILS_RET_OK;
 }
 
@@ -91,16 +96,24 @@ rcutils_steady_time_now(rcutils_time_point_value_t * now)
 #else  // defined(__MACH__)
   // Otherwise use clock_gettime.
 #if defined(CLOCK_MONOTONIC_RAW)
-  clock_gettime(CLOCK_MONOTONIC_RAW, &timespec_now);
+  int ret = clock_gettime(CLOCK_MONOTONIC_RAW, &timespec_now);
+  if (ret < 0) {
+    return RCUTILS_RET_ERROR;
+  }
 #else  // defined(CLOCK_MONOTONIC_RAW)
-  clock_gettime(CLOCK_MONOTONIC, &timespec_now);
+  int ret = clock_gettime(CLOCK_MONOTONIC, &timespec_now);
+  if (ret < 0) {
+    return RCUTILS_RET_ERROR;
+  }
 #endif  // defined(CLOCK_MONOTONIC_RAW)
 #endif  // defined(__MACH__)
-  if (__WOULD_BE_NEGATIVE(timespec_now.tv_sec, timespec_now.tv_nsec)) {
+  if (WOULD_BE_NEGATIVE(timespec_now.tv_sec, timespec_now.tv_nsec)) {
     RCUTILS_SET_ERROR_MSG("unexpected negative time", rcutils_get_default_allocator());
     return RCUTILS_RET_ERROR;
   }
-  *now = RCUTILS_S_TO_NS((uint64_t)timespec_now.tv_sec) + timespec_now.tv_nsec;
+  int64_t nanoseconds = timespec_now.tv_nsec;
+  nanoseconds = nanoseconds + RCUTILS_S_TO_NS((int64_t)timespec_now.tv_sec);
+  *now = nanoseconds;
   return RCUTILS_RET_OK;
 }
 
