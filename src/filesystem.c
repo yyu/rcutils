@@ -92,7 +92,9 @@ rcutils_is_readable(const char * abs_path)
   if (!rcutils_exists(abs_path)) {
     return false;
   }
-  stat(abs_path, &buf);
+  if(stat(abs_path, &buf) < 0) {
+    return false;
+  }
 #ifdef _WIN32
   if (!(buf.st_mode & _S_IREAD)) {
 #else
@@ -110,7 +112,9 @@ rcutils_is_writable(const char * abs_path)
   if (!rcutils_exists(abs_path)) {
     return false;
   }
-  stat(abs_path, &buf);
+  if(stat(abs_path, &buf) < 0) {
+    return false;
+  }
 #ifdef _WIN32
   if (!(buf.st_mode & _S_IWRITE)) {
 #else
@@ -128,7 +132,9 @@ rcutils_is_readable_and_writable(const char * abs_path)
   if (!rcutils_exists(abs_path)) {
     return false;
   }
-  stat(abs_path, &buf);
+  if(stat(abs_path, &buf) < 0) {
+    return false;
+  }
 #ifdef _WIN32
   // NOTE(marguedas) on windows all writable files are readable
   // hence the following check is equivalent to "& _S_IWRITE"
