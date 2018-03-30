@@ -19,7 +19,13 @@
 bool rcutils_cli_option_exist(char ** begin, char ** end, const char * option)
 {
   // return std::find(begin, end, option) != end;
-  for (size_t i = 0; i < (size_t)(end - begin); ++i) {
+  if (end < begin) {
+    return false;
+  }
+
+  ptrdiff_t diff = end-begin;
+
+  for (int i = 0; i < diff; ++i) {
     if (strcmp(begin[i], option) == 0) {
       return true;
     }
