@@ -91,10 +91,11 @@ add_library(
   ${PROJECT_NAME}
   ${rcutils_sources})
 
-# Causes the visibility macros to use dllexport rather than dllimport,
-# which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
-
+if(NOT BUILD_SHARED_LIBS)
+  # Causes the visibility macros to use dllexport rather than dllimport,
+  # which is appropriate when building the dll but not consuming it.
+  target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
+endif()
 # Needed if pthread is used for thread local storage.
 if(IOS AND IOS_SDK_VERSION LESS 10.0)
   ament_export_libraries(pthread)
