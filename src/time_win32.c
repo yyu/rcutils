@@ -25,7 +25,7 @@ extern "C"
 
 #include <windows.h>
 
-#include "./common.h"
+#include "common.h"
 #include "rcutils/allocator.h"
 #include "rcutils/error_handling.h"
 

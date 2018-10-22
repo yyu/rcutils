@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include "./allocator_testing_utils.h"
+#include "allocator_testing_utils.h"
 #include "rcutils/allocator.h"
 #include "rcutils/error_handling.h"
 #include "rcutils/types/string_map.h"

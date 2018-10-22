@@ -24,7 +24,7 @@ extern "C"
 #include <stdint.h>
 #include <string.h>
 
-#include "./common.h"
+#include "common.h"
 #include "rcutils/strdup.h"
 #include "rcutils/format_string.h"
 #include "rcutils/types/rcutils_ret.h"
